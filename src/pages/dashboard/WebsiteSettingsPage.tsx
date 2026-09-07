@@ -73,6 +73,11 @@ export default function WebsiteSettingsPage() {
   const [galleryUploading, setGalleryUploading] = useState(false);
 
   const settings = clinicSettings?.settings || {};
+  const isDiagnostic = (clinicSettings as any)?.clinic_type === "diagnostic";
+  /** Pick diagnostics-specific wording for diagnostic centres, dental wording otherwise. */
+  const dx = (diagnostic: string, dental: string) => (isDiagnostic ? diagnostic : dental);
+  const sectionLabel = (id: string, label: string) =>
+    isDiagnostic && id === "dentist" ? "Meet the specialist" : label;
 
   // Form state
   const [form, setForm] = useState<SiteSettings>({});
@@ -277,7 +282,7 @@ export default function WebsiteSettingsPage() {
                     <SelectItem key={s.id} value={s.id}>
                       <span className="flex items-center gap-2">
                         <Icon className="h-4 w-4 shrink-0" />
-                        {s.label}
+                        {sectionLabel(s.id, s.label)}
                       </span>
                     </SelectItem>
                   );
@@ -297,7 +302,7 @@ export default function WebsiteSettingsPage() {
                 >
                   <Icon className="h-4 w-4 shrink-0" />
                   <span className="min-w-0">
-                    <span className="block text-sm font-medium leading-tight">{s.label}</span>
+                    <span className="block text-sm font-medium leading-tight">{sectionLabel(s.id, s.label)}</span>
                     <span className="hidden text-[11px] font-normal leading-tight text-muted-foreground lg:block">
                       {s.navHint}
                     </span>
@@ -335,7 +340,7 @@ export default function WebsiteSettingsPage() {
               <CardHeader className="border-b border-border/30">
                 <CardTitle className="text-base">Website Templates</CardTitle>
                 <CardDescription>
-                  Pick one of {websiteTemplates.length} complete dental website designs. Each template changes the layout,
+                  Pick one of {websiteTemplates.length} complete {dx("clinic", "dental")} website designs. Each template changes the layout,
                   hero style, colours, typography and section order of your public site.
                 </CardDescription>
               </CardHeader>
@@ -404,7 +409,7 @@ export default function WebsiteSettingsPage() {
                   <Label className="text-xs font-medium">Short description of your clinic</Label>
                   <Textarea
                     className="bg-muted/30 border-border/40 min-h-[60px]"
-                    placeholder="A modern dental clinic dedicated to your smile..."
+                    placeholder={dx("A modern diagnostic centre for accurate lab, imaging and pharmacy services...", "A modern dental clinic dedicated to your smile...")}
                     value={get("short_description")}
                     onChange={(e) => set("short_description", e.target.value)}
                   />
@@ -413,7 +418,7 @@ export default function WebsiteSettingsPage() {
                   <Label className="text-xs font-medium">Main headline</Label>
                   <Input
                     className="bg-muted/30 border-border/40"
-                    placeholder="Your Smile, Our Priority"
+                    placeholder={dx("Results You Can Trust", "Your Smile, Our Priority")}
                     value={get("hero_title")}
                     onChange={(e) => set("hero_title", e.target.value)}
                   />
@@ -422,7 +427,7 @@ export default function WebsiteSettingsPage() {
                   <Label className="text-xs font-medium">Sub-headline</Label>
                   <Input
                     className="bg-muted/30 border-border/40"
-                    placeholder="Professional dental care for the whole family"
+                    placeholder={dx("Accurate laboratory, imaging and pharmacy services", "Professional dental care for the whole family")}
                     value={get("hero_subtitle")}
                     onChange={(e) => set("hero_subtitle", e.target.value)}
                   />
@@ -455,7 +460,7 @@ export default function WebsiteSettingsPage() {
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
                     <Label className="text-xs font-medium">Main button wording</Label>
-                    <Input className="bg-muted/30 border-border/40" placeholder="Book an appointment" value={get("hero_cta_label")} onChange={(e) => set("hero_cta_label", e.target.value)} />
+                    <Input className="bg-muted/30 border-border/40" placeholder={dx("Book a test", "Book an appointment")} value={get("hero_cta_label")} onChange={(e) => set("hero_cta_label", e.target.value)} />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-medium">What the button does</Label>
@@ -492,7 +497,7 @@ export default function WebsiteSettingsPage() {
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1">
                       <Label className="text-xs">Title (optional)</Label>
-                      <Input className="bg-muted/30 border-border/40 h-8 text-xs" placeholder="e.g. Teeth Whitening" value={newGalleryTitle} onChange={(e) => setNewGalleryTitle(e.target.value)} />
+                      <Input className="bg-muted/30 border-border/40 h-8 text-xs" placeholder={dx("e.g. Ultrasound Suite", "e.g. Teeth Whitening")} value={newGalleryTitle} onChange={(e) => setNewGalleryTitle(e.target.value)} />
                     </div>
                     <div className="space-y-1">
                       <Label className="text-xs">Description (optional)</Label>
@@ -703,7 +708,7 @@ export default function WebsiteSettingsPage() {
                   <Label className="text-xs font-medium">Welcome Text (shown on website header)</Label>
                   <Textarea
                     className="bg-muted/30 border-border/40 min-h-[60px]"
-                    placeholder="Welcome to our clinic! Book your appointment today."
+                    placeholder={dx("Welcome! Book your test or check your results today.", "Welcome to our clinic! Book your appointment today.")}
                     value={get("welcome_text")}
                     onChange={(e) => set("welcome_text", e.target.value)}
                   />
@@ -712,7 +717,7 @@ export default function WebsiteSettingsPage() {
                   <Label className="text-xs font-medium">Booking Confirmation Message</Label>
                   <Textarea
                     className="bg-muted/30 border-border/40 min-h-[60px]"
-                    placeholder="Thank you for booking! We'll confirm your appointment shortly via WhatsApp."
+                    placeholder={dx("Thank you for booking! We'll confirm your test and sample collection shortly via WhatsApp.", "Thank you for booking! We'll confirm your appointment shortly via WhatsApp.")}
                     value={get("booking_confirmation_message")}
                     onChange={(e) => set("booking_confirmation_message", e.target.value)}
                   />
@@ -739,7 +744,7 @@ export default function WebsiteSettingsPage() {
                   <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Hero</p>
                   <div className="space-y-2">
                     <Label className="text-xs font-medium">Small badge above the headline</Label>
-                    <Input className="bg-muted/30 border-border/40" placeholder="Asaba's Premier Dental Clinic" value={get("hero_eyebrow")} onChange={(e) => set("hero_eyebrow", e.target.value)} />
+                    <Input className="bg-muted/30 border-border/40" placeholder={dx("Asaba's Trusted Diagnostic Centre", "Asaba's Premier Dental Clinic")} value={get("hero_eyebrow")} onChange={(e) => set("hero_eyebrow", e.target.value)} />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-medium">Second line (shown in your brand colour)</Label>
@@ -748,11 +753,11 @@ export default function WebsiteSettingsPage() {
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-medium">Small card on the photo — title</Label>
-                    <Input className="bg-muted/30 border-border/40" placeholder="Same-day appointments" value={get("hero_badge_title")} onChange={(e) => set("hero_badge_title", e.target.value)} />
+                    <Input className="bg-muted/30 border-border/40" placeholder={dx("Same-day sample collection", "Same-day appointments")} value={get("hero_badge_title")} onChange={(e) => set("hero_badge_title", e.target.value)} />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-medium">Small card on the photo — subtitle</Label>
-                    <Input className="bg-muted/30 border-border/40" placeholder="Call or book online and we'll fit you in." value={get("hero_badge_subtitle")} onChange={(e) => set("hero_badge_subtitle", e.target.value)} />
+                    <Input className="bg-muted/30 border-border/40" placeholder={dx("Walk in or book online — most results within 24 hours.", "Call or book online and we'll fit you in.")} value={get("hero_badge_subtitle")} onChange={(e) => set("hero_badge_subtitle", e.target.value)} />
                   </div>
                 </div>
 
@@ -764,7 +769,7 @@ export default function WebsiteSettingsPage() {
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-medium">Title</Label>
-                    <Input className="bg-muted/30 border-border/40" placeholder="Dental excellence, redefined for Asaba." value={get("about_title")} onChange={(e) => set("about_title", e.target.value)} />
+                    <Input className="bg-muted/30 border-border/40" placeholder={dx("Diagnostics you can rely on.", "Dental excellence, redefined for Asaba.")} value={get("about_title")} onChange={(e) => set("about_title", e.target.value)} />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-medium">Paragraph 1</Label>
@@ -788,17 +793,17 @@ export default function WebsiteSettingsPage() {
                   <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Services &amp; booking band</p>
                   <div className="space-y-2">
                     <Label className="text-xs font-medium">Small label above the title (optional)</Label>
-                    <Input className="bg-muted/30 border-border/40" placeholder="Our services" value={get("booking_eyebrow")} onChange={(e) => set("booking_eyebrow", e.target.value)} />
+                    <Input className="bg-muted/30 border-border/40" placeholder={dx("Tests & scans", "Our services")} value={get("booking_eyebrow")} onChange={(e) => set("booking_eyebrow", e.target.value)} />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-medium">Title</Label>
-                    <Input className="bg-muted/30 border-border/40" placeholder="Select your services & book instantly." value={get("booking_section_title")} onChange={(e) => set("booking_section_title", e.target.value)} />
+                    <Input className="bg-muted/30 border-border/40" placeholder={dx("Select your tests & book instantly.", "Select your services & book instantly.")} value={get("booking_section_title")} onChange={(e) => set("booking_section_title", e.target.value)} />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-medium">Subtitle</Label>
                     <Textarea className="bg-muted/30 border-border/40 min-h-[60px]" value={get("booking_section_subtitle")} onChange={(e) => set("booking_section_subtitle", e.target.value)} />
                   </div>
-                  <p className="text-[10px] text-muted-foreground">Services listed here come from your Treatments page, grouped by category.</p>
+                  <p className="text-[10px] text-muted-foreground">{dx("Tests and scans listed here come from your Treatments page, grouped by category.", "Services listed here come from your Treatments page, grouped by category.")}</p>
                 </div>
 
                 <div className="space-y-3">
@@ -821,7 +826,7 @@ export default function WebsiteSettingsPage() {
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-medium">Title</Label>
-                    <Input className="bg-muted/30 border-border/40" placeholder="Visit us today." value={get("visit_title")} onChange={(e) => set("visit_title", e.target.value)} />
+                    <Input className="bg-muted/30 border-border/40" placeholder={dx("Visit our centre.", "Visit us today.")} value={get("visit_title")} onChange={(e) => set("visit_title", e.target.value)} />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-medium">Subtitle</Label>
@@ -865,7 +870,7 @@ export default function WebsiteSettingsPage() {
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-medium">Extra figure — label</Label>
-                    <Input className="bg-muted/30 border-border/40" placeholder="Same-day slots" value={get("trust_extra_label")} onChange={(e) => set("trust_extra_label", e.target.value)} />
+                    <Input className="bg-muted/30 border-border/40" placeholder={dx("Result turnaround", "Same-day slots")} value={get("trust_extra_label")} onChange={(e) => set("trust_extra_label", e.target.value)} />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-medium">Extra figure — value</Label>
@@ -890,11 +895,11 @@ export default function WebsiteSettingsPage() {
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
                     <Label className="text-xs font-medium">Section title</Label>
-                    <Input className="bg-muted/30 border-border/40" placeholder="Our services" value={get("services_title")} onChange={(e) => set("services_title", e.target.value)} />
+                    <Input className="bg-muted/30 border-border/40" placeholder={dx("Our tests & scans", "Our services")} value={get("services_title")} onChange={(e) => set("services_title", e.target.value)} />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-medium">Section subtitle</Label>
-                    <Input className="bg-muted/30 border-border/40" placeholder="Everything your family needs" value={get("services_subtitle")} onChange={(e) => set("services_subtitle", e.target.value)} />
+                    <Input className="bg-muted/30 border-border/40" placeholder={dx("Lab, imaging and pharmacy under one roof", "Everything your family needs")} value={get("services_subtitle")} onChange={(e) => set("services_subtitle", e.target.value)} />
                   </div>
                 </div>
 
@@ -902,7 +907,7 @@ export default function WebsiteSettingsPage() {
                   {serviceCards.map((item, i) => (
                     <div key={i} className="space-y-3 rounded-lg border border-border/40 bg-card/50 p-3">
                       <div className="flex items-start gap-2">
-                        <Input className="bg-muted/30 border-border/40 flex-1" placeholder="Teeth whitening" value={item.title || ""} onChange={(e) => setServiceCards(serviceCards.map((r, idx) => (idx === i ? { ...r, title: e.target.value } : r)))} />
+                        <Input className="bg-muted/30 border-border/40 flex-1" placeholder={dx("Full blood count", "Teeth whitening")} value={item.title || ""} onChange={(e) => setServiceCards(serviceCards.map((r, idx) => (idx === i ? { ...r, title: e.target.value } : r)))} />
                         <Button variant="ghost" size="icon" className="h-9 w-9 shrink-0 text-destructive" onClick={() => setServiceCards(serviceCards.filter((_, idx) => idx !== i))}>
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
@@ -926,13 +931,13 @@ export default function WebsiteSettingsPage() {
               <CardContent className="space-y-4 pt-6">
                 <div className="space-y-2 max-w-lg">
                   <Label className="text-xs font-medium">Section title</Label>
-                  <Input className="bg-muted/30 border-border/40" placeholder="Why patients choose us" value={get("why_title")} onChange={(e) => set("why_title", e.target.value)} />
+                  <Input className="bg-muted/30 border-border/40" placeholder={dx("Why patients choose our centre", "Why patients choose us")} value={get("why_title")} onChange={(e) => set("why_title", e.target.value)} />
                 </div>
                 <div className="space-y-3">
                   {whyItems.map((item, i) => (
                     <div key={i} className="space-y-3 rounded-lg border border-border/40 bg-card/50 p-3">
                       <div className="flex items-start gap-2">
-                        <Input className="bg-muted/30 border-border/40 flex-1" placeholder="Painless treatment" value={item.title || ""} onChange={(e) => setWhyItems(whyItems.map((r, idx) => (idx === i ? { ...r, title: e.target.value } : r)))} />
+                        <Input className="bg-muted/30 border-border/40 flex-1" placeholder={dx("Accredited laboratory", "Painless treatment")} value={item.title || ""} onChange={(e) => setWhyItems(whyItems.map((r, idx) => (idx === i ? { ...r, title: e.target.value } : r)))} />
                         <Button variant="ghost" size="icon" className="h-9 w-9 shrink-0 text-destructive" onClick={() => setWhyItems(whyItems.filter((_, idx) => idx !== i))}>
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
@@ -956,7 +961,7 @@ export default function WebsiteSettingsPage() {
           <TabsContent value="dentist" className="mt-4">
             <Card className="glass-card">
               <CardHeader className="border-b border-border/30">
-                <CardTitle className="text-base">Meet the dentist</CardTitle>
+                <CardTitle className="text-base">{dx("Meet the specialist", "Meet the dentist")}</CardTitle>
                 <CardDescription>Introduce the person patients will see</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4 max-w-lg pt-6">
@@ -967,7 +972,7 @@ export default function WebsiteSettingsPage() {
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-medium">Credentials</Label>
-                    <Input className="bg-muted/30 border-border/40" placeholder="BDS, MSc Implantology" value={get("dentist_credentials")} onChange={(e) => set("dentist_credentials", e.target.value)} />
+                    <Input className="bg-muted/30 border-border/40" placeholder={dx("MBBS, FMCPath", "BDS, MSc Implantology")} value={get("dentist_credentials")} onChange={(e) => set("dentist_credentials", e.target.value)} />
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -979,7 +984,7 @@ export default function WebsiteSettingsPage() {
                   <Textarea className="bg-muted/30 border-border/40 min-h-[100px]" value={get("dentist_bio")} onChange={(e) => set("dentist_bio", e.target.value)} />
                 </div>
                 <Button className="bg-secondary hover:bg-secondary/90 shadow-lg shadow-secondary/20" onClick={() => handleSave()} disabled={updateClinic.isPending}>
-                  {updateClinic.isPending ? "Saving..." : "Save dentist profile"}
+                  {updateClinic.isPending ? "Saving..." : dx("Save specialist profile", "Save dentist profile")}
                 </Button>
               </CardContent>
             </Card>
