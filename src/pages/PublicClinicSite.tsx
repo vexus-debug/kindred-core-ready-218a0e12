@@ -101,6 +101,63 @@ export default function PublicClinicSite() {
 
   const s = clinic?.settings || {};
   const isDiagnostic = clinic?.clinic_type === "diagnostic";
+
+  /* ── Section copy: diagnostics centres vs dental clinics ── */
+  const copy = isDiagnostic
+    ? {
+        heroSubtitle: "Accurate laboratory, imaging and pharmacy services you can trust",
+        ctaLabel: "Book a Test",
+        badgeTitle: "Same-day sample collection",
+        badgeSubtitle: "Walk in or book online — most results within 24 hours.",
+        aboutTitle: "Diagnostics you can rely on.",
+        whyTitle: "Why patients choose our centre",
+        bookingEyebrow: "Tests & scans",
+        bookingTitle: "Select your tests & book instantly.",
+        bookingSubtitle: "Choose a test or scan, pick a time — confirmation comes straight to your phone.",
+        servicesGroupFallback: "Tests & Scans",
+        servicesEmpty: "Tests and scans will be listed here soon.",
+        bookingFormTitle: "Book your test",
+        serviceLabel: "Test or scan",
+        servicePlaceholder: "Select test or scan (optional)",
+        staffLabel: "Preferred specialist *",
+        staffPlaceholder: "Select specialist",
+        bookedTitle: "Test booked!",
+        bookAnother: "Book another test",
+        confirmDefault: "We'll be in touch to confirm your appointment and sample collection.",
+        navBooking: "Tests & Booking",
+        reviewsEyebrow: "Patient stories",
+        reviewsTitle: "What our patients say.",
+        visitTitle: "Visit our centre.",
+        visitSubtitle: "Find us, check our collection hours and plan your visit.",
+        teamLabel: "Our specialists",
+      }
+    : {
+        heroSubtitle: "Professional dental care for you and your family",
+        ctaLabel: "Book Appointment",
+        badgeTitle: "Same-day appointments",
+        badgeSubtitle: "Call or book online and we'll fit you in.",
+        aboutTitle: "Dental excellence, redefined.",
+        whyTitle: "Why choose us",
+        bookingEyebrow: "Our services",
+        bookingTitle: "Select your services & book instantly.",
+        bookingSubtitle: "Choose a treatment, pick your dentist and time — confirmation comes straight to your phone.",
+        servicesGroupFallback: "Treatments",
+        servicesEmpty: "Services will be listed here soon.",
+        bookingFormTitle: "Book your visit",
+        serviceLabel: "Service",
+        servicePlaceholder: "Select service (optional)",
+        staffLabel: "Doctor *",
+        staffPlaceholder: "Select doctor",
+        bookedTitle: "Appointment booked!",
+        bookAnother: "Book another",
+        confirmDefault: "We'll be in touch to confirm your appointment.",
+        navBooking: "Services & Booking",
+        reviewsEyebrow: "Patient stories",
+        reviewsTitle: "What our patients say.",
+        visitTitle: "Visit us today.",
+        visitSubtitle: "Find us, check our opening hours and plan your visit.",
+        teamLabel: "Our team",
+      };
   const tpl: WebsiteTemplate = getTemplate(s.template);
   const c = tpl.colors;
   const primaryColor = s.primary_color || c.primary;
@@ -220,11 +277,11 @@ export default function PublicClinicSite() {
   const serviceCards = s.service_cards || [];
   const testimonials = s.testimonials || [];
   const faqs = s.faqs || [];
-  const confirmMsg = s.booking_confirmation_message || "We'll be in touch to confirm your appointment.";
+  const confirmMsg = s.booking_confirmation_message || copy.confirmDefault;
 
   const heroTitle = s.hero_title || s.welcome_text || `Welcome to ${clinic?.name}`;
   const heroHighlight = s.hero_highlight || "";
-  const heroSubtitle = s.hero_subtitle || s.short_description || (isDiagnostic ? "Accurate laboratory, imaging and pharmacy services you can trust" : "Professional dental care for you and your family");
+  const heroSubtitle = s.hero_subtitle || s.short_description || copy.heroSubtitle;
   const heroEyebrow = s.hero_eyebrow || clinic?.name || "";
 
   const heroStats = [
@@ -238,7 +295,7 @@ export default function PublicClinicSite() {
 
   /* ── Grouped services for the dark booking section ── */
   const grouped = treatments.reduce<Record<string, Treatment[]>>((acc, t) => {
-    const key = t.category || "Treatments";
+    const key = t.category || (isDiagnostic ? "Tests & Scans" : "Treatments");
     (acc[key] ||= []).push(t);
     return acc;
   }, {});
@@ -263,14 +320,14 @@ export default function PublicClinicSite() {
     }
     return (
       <Button className={cls} style={{ backgroundColor: primaryColor, borderRadius: 999 }} onClick={scrollToBooking}>
-        <Calendar className="mr-2 h-5 w-5" /> {s.hero_cta_label || "Book Appointment"}
+        <Calendar className="mr-2 h-5 w-5" /> {s.hero_cta_label || copy.ctaLabel}
       </Button>
     );
   };
 
   const navLinks = [
     { id: "about", label: "About" },
-    { id: "book", label: "Services & Booking" },
+    { id: "book", label: copy.navBooking },
     ...(isDiagnostic ? [{ id: "results", label: "Check Results" }] : []),
     { id: "reviews", label: "Reviews" },
     { id: "visit", label: "Visit" },
@@ -372,8 +429,8 @@ export default function PublicClinicSite() {
               </div>
               <div className="p-4 text-white" style={{ backgroundColor: primaryColor, borderRadius: `calc(${radius} * 1.5)` }}>
                 <Clock className="h-5 w-5 mb-2 opacity-90" />
-                <p className="text-sm font-bold leading-tight">{s.hero_badge_title || "Same-day appointments"}</p>
-                <p className="text-[11px] mt-1 opacity-80 leading-snug">{s.hero_badge_subtitle || "Call or book online and we'll fit you in."}</p>
+                <p className="text-sm font-bold leading-tight">{s.hero_badge_title || copy.badgeTitle}</p>
+                <p className="text-[11px] mt-1 opacity-80 leading-snug">{s.hero_badge_subtitle || copy.badgeSubtitle}</p>
               </div>
             </div>
           </div>
@@ -390,7 +447,7 @@ export default function PublicClinicSite() {
               </span>
             )}
             <h2 className="text-3xl sm:text-4xl font-bold leading-tight tracking-tight" style={headingStyle}>
-              {s.about_title || (isDiagnostic ? `Diagnostics you can rely on.` : `Dental excellence, redefined.`)}
+              {s.about_title || copy.aboutTitle}
             </h2>
             {(s.about_body || s.short_description) && (
               <p className="mt-4 text-sm sm:text-base leading-relaxed whitespace-pre-line" style={mutedStyle}>{s.about_body || s.short_description}</p>
@@ -441,7 +498,7 @@ export default function PublicClinicSite() {
           {whyItems.length > 0 && (
             <FadeInSection className="mt-6">
               <div className="p-6 shadow-sm" style={cardStyle}>
-                <h3 className="font-bold mb-4" style={headingStyle}>{s.why_title || "Why choose us"}</h3>
+                <h3 className="font-bold mb-4" style={headingStyle}>{s.why_title || copy.whyTitle}</h3>
                 <ul className="space-y-3">
                   {whyItems.map((w, i) => (
                     <li key={i} className="flex items-start gap-3">
@@ -479,13 +536,13 @@ export default function PublicClinicSite() {
       <section id="book" ref={bookingRef} className="py-16 px-4 sm:px-6 scroll-mt-16" style={{ backgroundColor: darkBg, color: darkText }}>
         <div className="max-w-6xl mx-auto">
           <span className="inline-block text-[11px] font-semibold px-3 py-1.5 rounded-full mb-4" style={{ backgroundColor: "rgba(255,255,255,0.08)", color: darkMuted }}>
-            {s.booking_eyebrow || "Our services"}
+            {s.booking_eyebrow || copy.bookingEyebrow}
           </span>
           <h2 className="text-3xl sm:text-4xl font-bold leading-tight tracking-tight" style={{ fontFamily: tpl.headingFont, color: darkText }}>
-            {s.booking_section_title || "Select your services & book instantly."}
+            {s.booking_section_title || copy.bookingTitle}
           </h2>
           <p className="mt-3 text-sm sm:text-base max-w-xl" style={{ color: darkMuted }}>
-            {s.booking_section_subtitle || (isDiagnostic ? "Choose a test or scan, pick a time — confirmation comes straight to your phone." : "Choose a treatment, pick your dentist and time — confirmation comes straight to your phone.")}
+            {s.booking_section_subtitle || copy.bookingSubtitle}
           </p>
 
           <div className="mt-8 grid lg:grid-cols-2 gap-8 items-start">
@@ -521,7 +578,7 @@ export default function PublicClinicSite() {
                   </div>
                 </div>
               ))}
-              {treatments.length === 0 && <p className="text-sm" style={{ color: darkMuted }}>Services will be listed here soon.</p>}
+              {treatments.length === 0 && <p className="text-sm" style={{ color: darkMuted }}>{copy.servicesEmpty}</p>}
             </div>
 
             {/* Booking form */}
@@ -531,15 +588,15 @@ export default function PublicClinicSite() {
                   <div className="h-14 w-14 rounded-full mx-auto flex items-center justify-center" style={{ backgroundColor: hexToRgba(primaryColor, 0.16) }}>
                     <CheckCircle className="h-7 w-7" style={{ color: primaryColor }} />
                   </div>
-                  <h3 className="text-lg font-bold" style={{ color: darkText, fontFamily: tpl.headingFont }}>Appointment booked!</h3>
+                  <h3 className="text-lg font-bold" style={{ color: darkText, fontFamily: tpl.headingFont }}>{copy.bookedTitle}</h3>
                   <p className="text-sm max-w-sm mx-auto" style={{ color: darkMuted }}>{confirmMsg}</p>
                   <Button variant="outline" style={{ borderColor: darkBorder, color: darkText, backgroundColor: "transparent" }} onClick={() => { setBooked(false); setName(""); setPhone(""); setSelectedStaff(""); setSelectedTreatment(""); setDate(""); setTime(""); }}>
-                    Book another
+                    {copy.bookAnother}
                   </Button>
                 </motion.div>
               ) : (
                 <div className="space-y-4">
-                  <h3 className="text-lg font-bold" style={{ color: darkText, fontFamily: tpl.headingFont }}>Book your visit</h3>
+                  <h3 className="text-lg font-bold" style={{ color: darkText, fontFamily: tpl.headingFont }}>{copy.bookingFormTitle}</h3>
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-1.5">
                       <label className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: darkMuted }}>Full name *</label>
@@ -550,10 +607,10 @@ export default function PublicClinicSite() {
                       <Input placeholder="080xxxxxxxx" value={phone} onChange={(e) => setPhone(e.target.value)} className="h-11 text-white placeholder:text-white/40" style={{ backgroundColor: "rgba(255,255,255,0.05)", borderColor: darkBorder }} />
                     </div>
                     <div className="space-y-1.5 sm:col-span-2">
-                      <label className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: darkMuted }}>Service</label>
+                      <label className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: darkMuted }}>{copy.serviceLabel}</label>
                       <Select value={selectedTreatment} onValueChange={setSelectedTreatment}>
                         <SelectTrigger className="h-11 text-white" style={{ backgroundColor: "rgba(255,255,255,0.05)", borderColor: darkBorder }}>
-                          <SelectValue placeholder="Select service (optional)" />
+                          <SelectValue placeholder={copy.servicePlaceholder} />
                         </SelectTrigger>
                         <SelectContent>
                           {treatments.map((t) => (
@@ -563,10 +620,10 @@ export default function PublicClinicSite() {
                       </Select>
                     </div>
                     <div className="space-y-1.5 sm:col-span-2">
-                      <label className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: darkMuted }}>Doctor *</label>
+                      <label className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: darkMuted }}>{copy.staffLabel}</label>
                       <Select value={selectedStaff} onValueChange={setSelectedStaff}>
                         <SelectTrigger className="h-11 text-white" style={{ backgroundColor: "rgba(255,255,255,0.05)", borderColor: darkBorder }}>
-                          <SelectValue placeholder="Select doctor" />
+                          <SelectValue placeholder={copy.staffPlaceholder} />
                         </SelectTrigger>
                         <SelectContent>
                           {staff.map((m) => (
@@ -599,7 +656,7 @@ export default function PublicClinicSite() {
 
           {staff.length > 0 && (
             <div className="mt-12">
-              <p className="text-[11px] uppercase tracking-[0.18em] mb-4" style={{ color: darkMuted }}>Our team</p>
+              <p className="text-[11px] uppercase tracking-[0.18em] mb-4" style={{ color: darkMuted }}>{copy.teamLabel}</p>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {staff.map((doc) => (
                   <div key={doc.id} className="p-4 flex items-center gap-3" style={{ backgroundColor: darkSurface, border: `1px solid ${darkBorder}`, borderRadius: `calc(${radius} * 1.2)` }}>
@@ -634,9 +691,9 @@ export default function PublicClinicSite() {
         <section id="reviews" className="py-16 px-4 sm:px-6 scroll-mt-16" style={{ backgroundColor: c.bg }}>
           <div className="max-w-6xl mx-auto text-center">
             <span className="inline-block text-[11px] font-semibold px-3 py-1.5 rounded-full mb-4" style={{ backgroundColor: hexToRgba(primaryColor, 0.1), color: primaryColor }}>
-              {s.reviews_eyebrow || "Patient stories"}
+              {s.reviews_eyebrow || copy.reviewsEyebrow}
             </span>
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight" style={headingStyle}>{s.reviews_title || "What our patients say."}</h2>
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight" style={headingStyle}>{s.reviews_title || copy.reviewsTitle}</h2>
             {avgRating && (
               <div className="mt-4 flex items-center justify-center gap-2">
                 <div className="flex gap-0.5">
@@ -699,9 +756,9 @@ export default function PublicClinicSite() {
             <span className="inline-block text-[11px] font-semibold px-3 py-1.5 rounded-full mb-4" style={{ backgroundColor: hexToRgba(primaryColor, 0.1), color: primaryColor }}>
               {s.visit_eyebrow || "Location"}
             </span>
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight" style={headingStyle}>{s.visit_title || "Visit us today."}</h2>
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight" style={headingStyle}>{s.visit_title || copy.visitTitle}</h2>
             <p className="mt-3 text-sm sm:text-base max-w-xl mx-auto" style={mutedStyle}>
-              {s.visit_subtitle || clinic?.address || "Find us, check our opening hours and plan your visit."}
+              {s.visit_subtitle || clinic?.address || copy.visitSubtitle}
             </p>
           </div>
 
